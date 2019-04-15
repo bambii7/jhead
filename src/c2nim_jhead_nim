@@ -1,0 +1,242 @@
+## --------------------------------------------------------------------------
+##  Include file for jhead program.
+##
+##  This include file only defines stuff that goes across modules.
+##  I like to keep the definitions for macros and structures as close to
+##  where they get used as possible, so include files only get stuff that
+##  gets used in more than one file.
+## --------------------------------------------------------------------------
+
+## --------------------------------------------------------------------------
+
+when defined(_WIN32):
+  ##  Make the Microsoft Visual c 10 deprecate warnings go away.
+  ##  The _CRT_SECURE_NO_DEPRECATE doesn't do the trick like it should.
+  const
+    unlink* = _unlink
+    chmod* = _chmod
+    access* = _access
+    mktemp* = _mktemp
+else:
+type
+  uchar* = cuchar
+
+const
+  FALSE* = 0
+
+const
+  MAX_COMMENT_SIZE* = 16000
+
+when defined(_WIN32):
+  const
+    PATH_MAX* = _MAX_PATH
+    SLASH* = '\x08'
+else:
+  const
+    SLASH* = '/'
+## --------------------------------------------------------------------------
+##  This structure is used to store jpeg file sections in memory.
+
+type
+  Section_t* {.bycopy.} = object
+    Data*: ptr uchar
+    Type*: cint
+    Size*: cuint
+
+
+var ExifSectionIndex*: cint
+
+var DumpExifMap*: cint
+
+const
+  MAX_DATE_COPIES* = 10
+
+## --------------------------------------------------------------------------
+##  This structure stores Exif header image elements in a simple manner
+##  Used to store camera data as extracted from the various ways that it can be
+##  stored in an exif header
+
+type
+  INNER_C_STRUCT_jhead_82* {.bycopy.} = object
+    Present*: char ##  Info in the jfif header.
+                 ##  This info is not used much - jhead used to just replace it with default
+                 ##  values, and over 10 years, only two people pointed this out.
+    ResolutionUnits*: char
+    XDensity*: cshort
+    YDensity*: cshort
+
+  ImageInfo_t* {.bycopy.} = object
+    FileName*: array[PATH_MAX + 1, char]
+    FileDateTime*: time_t
+    JfifHeader*: INNER_C_STRUCT_jhead_82
+    FileSize*: cuint
+    CameraMake*: array[32, char]
+    CameraModel*: array[40, char]
+    DateTime*: array[20, char]
+    Height*: cuint
+    Width*: cuint
+    Orientation*: cint
+    IsColor*: cint
+    Process*: cint
+    FlashUsed*: cint
+    FocalLength*: cfloat
+    ExposureTime*: cfloat
+    ApertureFNumber*: cfloat
+    Distance*: cfloat
+    CCDWidth*: cfloat
+    ExposureBias*: cfloat
+    DigitalZoomRatio*: cfloat
+    FocalLength35mmEquiv*: cint ##  Exif 2.2 tag - usually not present.
+    Whitebalance*: cint
+    MeteringMode*: cint
+    ExposureProgram*: cint
+    ExposureMode*: cint
+    ISOequivalent*: cint
+    LightSource*: cint
+    DistanceRange*: cint
+    xResolution*: cfloat
+    yResolution*: cfloat
+    ResolutionUnit*: cint
+    Comments*: array[MAX_COMMENT_SIZE, char]
+    CommentWidthchars*: cint   ##  If nonzero, widechar comment, indicates number of chars.
+    ThumbnailOffset*: cint     ##  Exif offset to thumbnail
+    ThumbnailSize*: cint       ##  Size of thumbnail.
+    LargestExifOffset*: cint   ##  Last exif data referenced (to check if thumbnail is at end)
+    ThumbnailAtEnd*: char      ##  Exif header ends with the thumbnail
+                        ##  (we can only modify the thumbnail if its at the end)
+    ThumbnailSizeOffset*: cint
+    DateTimeOffsets*: array[MAX_DATE_COPIES, cint]
+    numDateTimeTags*: cint
+    GpsInfoPresent*: cint
+    GpsLat*: array[31, char]
+    GpsLong*: array[31, char]
+    GpsAlt*: array[20, char]
+    QualityGuess*: cint
+
+
+const
+  EXIT_SUCCESS* = 0
+
+##  jpgfile.c functions
+
+type
+  ReadMode_t* = enum
+    READ_METADATA = 1, READ_IMAGE = 2, READ_ALL = 3, READ_ANY = 5
+
+
+##  prototypes for jhead.c functions
+
+proc ErrFatal*(msg: cstring)
+proc ErrNonfatal*(msg: cstring; a1: cint; a2: cint)
+proc FileTimeAsString*(TimeStr: cstring)
+proc JheadMain*(argc: cint; argv: cstringArray): cint
+##  Prototypes for exif.c functions.
+
+proc Exif2tm*(timeptr: ptr tm; ExifTime: cstring): cint
+proc Clear_EXIF*()
+proc process_EXIF*(CharBuf: ptr cuchar; length: cint)
+proc ShowImageInfo*(ShowFileInfo: cint)
+proc ShowConciseImageInfo*()
+proc ClearOrientation*(): cstring
+proc PrintFormatNumber*(ValuePtr: pointer; Format: cint; ByteCount: cint)
+proc ConvertAnyFormat*(ValuePtr: pointer; Format: cint): cdouble
+proc Get16u*(Short: pointer): cint
+proc Get32u*(Long: pointer): cuint
+proc Get32s*(Long: pointer): cint
+proc Put32u*(Value: pointer; PutValue: cuint)
+proc create_EXIF*()
+## --------------------------------------------------------------------------
+##  Exif format descriptor stuff
+
+var BytesPerFormat*: ptr cint
+
+const
+  NUM_FORMATS* = 12
+  FMT_BYTE* = 1
+  FMT_STRING* = 2
+  FMT_USHORT* = 3
+  FMT_ULONG* = 4
+  FMT_URATIONAL* = 5
+  FMT_SBYTE* = 6
+  FMT_UNDEFINED* = 7
+  FMT_SSHORT* = 8
+  FMT_SLONG* = 9
+  FMT_SRATIONAL* = 10
+  FMT_SINGLE* = 11
+  FMT_DOUBLE* = 12
+
+##  makernote.c prototypes
+
+proc ProcessMakerNote*(DirStart: ptr cuchar; ByteCount: cint; OffsetBase: ptr cuchar;
+                      ExifLength: cuint)
+##  gpsinfo.c prototypes
+
+proc ProcessGpsInfo*(ValuePtr: ptr cuchar; OffsetBase: ptr cuchar; ExifLength: cuint)
+##  iptc.c prototpyes
+
+proc show_IPTC*(CharBuf: ptr cuchar; length: cuint)
+proc ShowXmp*(XmpSection: Section_t)
+##  Prototypes for myglob.c module
+
+when defined(_WIN32):
+  proc MyGlob*(Pattern: cstring; FileFuncParm: proc (FileName: cstring))
+  proc SlashToNative*(Path: cstring)
+##  Prototypes for paths.c module
+
+proc EnsurePathExists*(FileName: cstring): cint
+proc CatPath*(BasePath: cstring; FilePath: cstring)
+##  Prototypes from jpgfile.c
+
+proc ReadJpegSections*(infile: ptr FILE; ReadMode: ReadMode_t): cint
+proc DiscardData*()
+proc DiscardAllButExif*()
+proc ReadJpegFile*(FileName: cstring; ReadMode: ReadMode_t): cint
+proc ReplaceThumbnail*(ThumbFileName: cstring): cint
+proc SaveThumbnail*(ThumbFileName: cstring): cint
+proc RemoveSectionType*(SectionType: cint): cint
+proc RemoveUnknownSections*(): cint
+proc WriteJpegFile*(FileName: cstring)
+proc FindSection*(SectionType: cint): ptr Section_t
+proc CreateSection*(SectionType: cint; Data: ptr cuchar; size: cint): ptr Section_t
+proc ResetJpgfile*()
+##  Prototypes from jpgqguess.c
+
+proc process_DQT*(Data: ptr uchar; length: cint)
+proc process_DHT*(Data: ptr uchar; length: cint)
+##  Variables from jhead.c used by exif.c
+
+var ImageInfo*: ImageInfo_t
+
+var ShowTags*: cint
+
+## --------------------------------------------------------------------------
+##  JPEG markers consist of one or more 0xFF bytes, followed by a marker
+##  code byte (which is not an FF).  Here are the marker codes of interest
+##  in this program.  (See jdmarker.c for a more complete list.)
+## --------------------------------------------------------------------------
+
+const
+  M_SOF0* = 0x000000C0
+  M_SOF1* = 0x000000C1
+  M_SOF2* = 0x000000C2
+  M_SOF3* = 0x000000C3
+  M_SOF5* = 0x000000C5
+  M_SOF6* = 0x000000C6
+  M_SOF7* = 0x000000C7
+  M_SOF9* = 0x000000C9
+  M_SOF10* = 0x000000CA
+  M_SOF11* = 0x000000CB
+  M_SOF13* = 0x000000CD
+  M_SOF14* = 0x000000CE
+  M_SOF15* = 0x000000CF
+  M_SOI* = 0x000000D8
+  M_EOI* = 0x000000D9
+  M_SOS* = 0x000000DA
+  M_JFIF* = 0x000000E0
+  M_EXIF* = 0x000000E1
+  M_XMP* = 0x000010E1
+  M_COM* = 0x000000FE
+  M_DQT* = 0x000000DB
+  M_DHT* = 0x000000C4
+  M_DRI* = 0x000000DD
+  M_IPTC* = 0x000000ED
