@@ -1451,7 +1451,7 @@ static time_t ParseCmdDate(char * DateSpecified)
 //--------------------------------------------------------------------------
 // The main program.
 //--------------------------------------------------------------------------
-int jheadmain (int argc, char **argv)
+int Jheadmain (int argc, char **argv)
 {
     int argn;
     char * arg;

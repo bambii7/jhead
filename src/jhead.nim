@@ -2,12 +2,11 @@ import os
 import jheadpkg/jheadprocs
 
 proc main():void = 
-  echo EnsurePathExists("/Users/lhope/dev/g.jpg")
-  # let argc:cint = cint(2);
-  # let args:array[2, string] = ["abc", "foo"]
-  # let argv = allocCStringArray(args)
-  # discard JheadMain(argc, argv)
-  # deallocCStringArray(argv)
+  let argc:cint = cint(2);
+  let args:seq[string] = @["jhead", paramStr(1)]
+  var argv: cStringArray = args.allocCStringArray()
+  discard Jheadmain(argc, argv)
+  argv.deallocCStringArray()
 
 if isMainModule:
   main()
