@@ -20,7 +20,7 @@
 #include <sys/stat.h>
 
 #define JHEAD_VERSION "3.03"
-
+#define PATH_MAX 1024
 // This #define turns on features that are too very specific to 
 // how I organize my photos.  Best to ignore everything inside #ifdef MATTHIAS
 //#define MATTHIAS
@@ -1451,7 +1451,7 @@ static time_t ParseCmdDate(char * DateSpecified)
 //--------------------------------------------------------------------------
 // The main program.
 //--------------------------------------------------------------------------
-int main (int argc, char **argv)
+int jheadmain (int argc, char **argv)
 {
     int argn;
     char * arg;
