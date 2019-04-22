@@ -140,3 +140,14 @@ Options:
 
 
 let args* = docopt(doc, version = "Jhead 3.03")
+
+proc toSeq*(t: Table[string, Value]): seq[string] =
+  var programArg = @["jhead"]
+  var s = newSeq[string](0)
+  
+  for file in t["<files>"].items:
+    s.add(file)
+  return programArg.concat(s)
+
+
+  # args.toSeq.allocCStringArray
