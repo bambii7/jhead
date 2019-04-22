@@ -8,5 +8,5 @@ srcDir        = "src"
 bin           = @["jhead"]
 
 # Dependencies
-
+requires "docopt"
 requires "nim >= 0.18.0"
