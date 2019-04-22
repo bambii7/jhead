@@ -12,7 +12,6 @@ Usage:
   jhead <files>...
   jhead -v <files>...
   jhead (-h | --help)
-  jhead (-v | --version)
 
 Options:
   GENERAL METADATA:
@@ -144,7 +143,13 @@ let args* = docopt(doc, version = "Jhead 3.03")
 proc toSeq*(t: Table[string, Value]): seq[string] =
   var programArg = @["jhead"]
   var s = newSeq[string](0)
-  
+
+  for k, v in t.pairs:
+    # echo k, " ", v, " : ", v.kind
+
+    if v.kind == vkBool and v:
+      s.add(k)
+
   for file in t["<files>"].items:
     s.add(file)
   return programArg.concat(s)
