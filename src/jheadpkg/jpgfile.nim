@@ -1,4 +1,5 @@
 import streams
+import strformat
 
 const
   SEC     = 0xFF # section start
@@ -24,14 +25,19 @@ type
     classification: int
     size: uint
 
-iterator chars(s: FileStream): char =
+iterator bytes(s: FileStream): byte =
   while not s.atEnd:
-    yield s.readChar
+    yield s.readUint8
 
 proc fileToSeq(s: FileStream): seq[byte] =
   result = @[]
-  for c in s.chars:
+  for c in s.bytes:
     result.add(byte(c))
+  
+proc byteSeqToString(s: seq[byte]): string =
+  result = ""
+  for c in s:
+    result.addEscapedChar(char(c))
 
 proc readSections(bytes: seq[byte]): seq[JpegSection] =
   var cursor = 0
@@ -46,7 +52,30 @@ proc readSections(bytes: seq[byte]): seq[JpegSection] =
         of SOS:
           echo "start of scan"
         of JFIF:
-          echo "jfif marker"
+          let lh = bytes[cursor + 2]
+          let ll = bytes[cursor + 3]
+          let section_len = (lh shl 8) or ll
+          let data = bytes[cursor + 4..(cursor + int(section_len) + 4)]
+
+          assert(byteSeqToString(data[0..4]) == "JFIF\\x00", "JFIF marker missing header")
+          assert(int(section_len) >= 16, "JFIF header too short")
+
+          let resolutions_units = int(data[7])
+          let x_density = (data[8] shl 8) or data[9];
+          let y_density = (data[10] shl 8) or data[11];
+          
+          var resolutions_units_str:string
+          case resolutions_units:
+            of 0:
+              resolutions_units_str = "Units (aspect ratio)"
+            of 1:
+              resolutions_units_str = "Units (dots per inch)"
+            of 2:
+              resolutions_units_str = "Units (dots per cm)"
+            else:
+              resolutions_units_str = "Units (unknown)"
+
+          echo &"JFIF SOI marker: {resolutions_units_str}  X-density={$x_density} Y-density={$y_density}"
         of EXIF:
           echo "exif marker"
         of COM:
