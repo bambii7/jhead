@@ -24,6 +24,11 @@ type
     data: char
     classification: int
     size: uint
+  JifiHeader = object
+    present: bool
+    resolutionUnits: byte
+    xDensity: byte
+    yDensity: byte
 
 iterator bytes(s: FileStream): byte =
   while not s.atEnd:
@@ -60,22 +65,24 @@ proc readSections(bytes: seq[byte]): seq[JpegSection] =
           assert(byteSeqToString(data[0..4]) == "JFIF\\x00", "JFIF marker missing header")
           assert(int(section_len) >= 16, "JFIF header too short")
 
-          let resolutions_units = int(data[7])
+          let resolutions_units = data[7]
           let x_density = (data[8] shl 8) or data[9];
           let y_density = (data[10] shl 8) or data[11];
-          
-          var resolutions_units_str:string
-          case resolutions_units:
-            of 0:
-              resolutions_units_str = "Units (aspect ratio)"
-            of 1:
-              resolutions_units_str = "Units (dots per inch)"
-            of 2:
-              resolutions_units_str = "Units (dots per cm)"
-            else:
-              resolutions_units_str = "Units (unknown)"
+          let jfif = JifiHeader(present: true, resolutionUnits: resolutions_units, xDensity: x_density, yDensity: y_density)
+          echo jfif
+          # var resolutions_units_str:string
+          # 
+          # case resolutions_units:
+          #   of 0:
+          #     resolutions_units_str = "Units (aspect ratio)"
+          #   of 1:
+          #     resolutions_units_str = "Units (dots per inch)"
+          #   of 2:
+          #     resolutions_units_str = "Units (dots per cm)"
+          #   else:
+          #     resolutions_units_str = "Units (unknown)"
 
-          echo &"JFIF SOI marker: {resolutions_units_str}  X-density={$x_density} Y-density={$y_density}"
+          # echo &"JFIF SOI marker: {resolutions_units_str}  X-density={$x_density} Y-density={$y_density}"
         of EXIF:
           echo "exif marker"
         of COM:
