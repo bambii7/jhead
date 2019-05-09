@@ -8,3 +8,6 @@ Currently it's a wrapper around the C util. But I aim to convert it to a pure Ni
 # Build
 
 `nimble build`
+
+# Usage
+`jhead --jfif <file>` # print jfif header
