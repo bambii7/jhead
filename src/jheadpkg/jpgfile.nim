@@ -44,19 +44,32 @@ proc byteSeqToString(s: seq[byte]): string =
   for c in s:
     result.addEscapedChar(char(c))
 
-proc readSections(bytes: seq[byte]): seq[JpegSection] =
+proc readSections(bytes: seq[byte], sections: set[byte]): seq[JpegSection] =
+  discard sections
   var cursor = 0
   while cursor < bytes.len:
     if bytes[cursor] == SEC:
       let section_type = bytes[cursor + 1]
       case section_type:
         of SOI:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "start of image"
         of EOI:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "end of image"
         of SOS:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "start of scan"
         of JFIF:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           let lh = bytes[cursor + 2]
           let ll = bytes[cursor + 3]
           let section_len = (lh shl 8) or ll
@@ -84,27 +97,44 @@ proc readSections(bytes: seq[byte]): seq[JpegSection] =
 
           # echo &"JFIF SOI marker: {resolutions_units_str}  X-density={$x_density} Y-density={$y_density}"
         of EXIF:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "exif marker"
         of COM:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "comment"
         of DQT:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "quantization table"
         of DHT:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "huffmann table"
         of DRI:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "DRI"
         of IPTC:
+          if not sections.contains(section_type):
+            cursor.inc
+            continue
           echo "IPTC"
         else:
           discard
-    cursor += 1
+    cursor.inc
 
-proc read*(jpeg_path: string): Jpeg =
+proc readJpgSections*(jpeg_path: string, sections: set[byte]): Jpeg =
   let s = newFileStream(jpeg_path, FileMode.fmRead)
   let bytes = fileToSeq(s)
-  let sections = readSections(bytes)
+  let sections = readSections(bytes, sections)
   let jpeg = Jpeg(path: jpeg_path, bytes: bytes, sections: sections)
 
   return jpeg
   
-discard read("IMG_7098.jpg")
