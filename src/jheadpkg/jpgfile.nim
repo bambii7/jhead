@@ -1,5 +1,6 @@
 import streams
 import strformat
+import jtypes
 
 const
   SEC     = 0xFF # section start
@@ -24,11 +25,6 @@ type
     data: char
     classification: int
     size: uint
-  JifiHeader = object
-    present: bool
-    resolutionUnits: byte
-    xDensity: byte
-    yDensity: byte
 
 iterator bytes(s: FileStream): byte =
   while not s.atEnd:
