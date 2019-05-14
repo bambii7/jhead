@@ -1,11 +1,11 @@
 import times
 
 type
-  JifiHeader = object
-    present: char
-    resolutionUnits: char
-    xDensity: int
-    yDensity: int
+  JifiHeader* = object
+    present*: bool
+    resolutionUnits*: byte
+    xDensity*: byte
+    yDensity*: byte
   GpsInfo = object
     lat: char
     long: char
