@@ -1,4 +1,7 @@
 .DS_Store
+jhead
 src/nimcache
 src/jheadpkg/nimcache
 .vscode
+csource
+
