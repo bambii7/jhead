@@ -1,7 +1,7 @@
 import os
-import jheadpkg/jpgfile
 import docopt
-
+import jheadpkg/jtypes
+import jheadpkg/jpgfile
 const doc = """
 
 Jhead is a program for manipulating settings and thumbnails in Exif jpeg headers
@@ -22,10 +22,10 @@ Options:
 proc main():void = 
   let args = docopt(doc, version = "Jhead 3.03")
   let file:string = $args["<files>"]
-  var sections:set[byte] = { byte(0xFF) }
+  var sections:set[byte] = { }
   
   if args["--jfif"]:
-    sections.incl(byte(0xE0))
+    sections.incl(byte(JFIF))
 
   discard readJpgSections(file, sections)
 

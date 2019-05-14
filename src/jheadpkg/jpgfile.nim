@@ -2,20 +2,6 @@ import streams
 import strformat
 import jtypes
 
-const
-  SEC     = 0xFF # section start
-  SOI     = 0xD8 # start of image
-  EOI     = 0xD9 # end of image
-  SOS     = 0xDA # start of scan
-  JFIF    = 0xE0 # Jfif marker
-  EXIF    = 0xE1 # exkf marker
-  # XMP     = 0x10E1 # not a real tag
-  COM     = 0xFE # comment
-  DQT     = 0xDB # define quantization table
-  DHT     = 0xC4 # define huffmann table
-  DRI     = 0xDD
-  IPTC    = 0xED # IPTC marker
-
 type
   Jpeg = object
     path: string

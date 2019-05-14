@@ -1,5 +1,18 @@
 import times
 
+const
+  SEC*     = 0xFF # section start
+  SOI*     = 0xD8 # start of image
+  EOI*     = 0xD9 # end of image
+  SOS*     = 0xDA # start of scan
+  JFIF*    = 0xE0 # Jfif marker
+  EXIF*    = 0xE1 # exkf marker
+  COM*     = 0xFE # comment
+  DQT*     = 0xDB # define quantization table
+  DHT*     = 0xC4 # define huffmann table
+  DRI*     = 0xDD
+  IPTC*    = 0xED # IPTC marker
+
 type
   JifiHeader* = object
     present*: bool
