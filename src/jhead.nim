@@ -2,6 +2,7 @@ import os
 import docopt
 import jheadpkg/jtypes
 import jheadpkg/jpgfile
+import jheadpkg/printimageinfo
 const doc = """
 
 Jhead is a program for manipulating settings and thumbnails in Exif jpeg headers
@@ -27,7 +28,7 @@ proc main():void =
   if args["--jfif"]:
     sections.incl(byte(JFIF))
 
-  discard readJpgSections(file, sections)
+  echo readJpgSections(file, sections)
 
 if isMainModule:
   main()

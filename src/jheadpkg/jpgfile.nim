@@ -1,5 +1,4 @@
 import streams
-import strformat
 import jtypes
 
 iterator bytes(s: FileStream): byte =
@@ -53,21 +52,10 @@ proc readSections(bytes: seq[byte], sections: set[byte]): ImageInfo =
           let resolutions_units = data[7]
           let x_density = (data[8] shl 8) or data[9];
           let y_density = (data[10] shl 8) or data[11];
-          let jfif = JifiHeader(present: true, resolutionUnits: resolutions_units, xDensity: x_density, yDensity: y_density)
-          echo jfif
-          # var resolutions_units_str:string
-          # 
-          # case resolutions_units:
-          #   of 0:
-          #     resolutions_units_str = "Units (aspect ratio)"
-          #   of 1:
-          #     resolutions_units_str = "Units (dots per inch)"
-          #   of 2:
-          #     resolutions_units_str = "Units (dots per cm)"
-          #   else:
-          #     resolutions_units_str = "Units (unknown)"
-
-          # echo &"JFIF SOI marker: {resolutions_units_str}  X-density={$x_density} Y-density={$y_density}"
+          result.jfifHeader.present = true
+          result.jfifHeader.resolutionUnits = resolutions_units
+          result.jfifHeader.xDensity = x_density
+          result.jfifHeader.yDensity = y_density
         of EXIF:
           if not sections.contains(section_type):
             cursor.inc
@@ -101,5 +89,4 @@ proc readSections(bytes: seq[byte], sections: set[byte]): ImageInfo =
 proc readJpgSections*(jpeg_path: string, sections: set[byte]): ImageInfo =
   let s = newFileStream(jpeg_path, FileMode.fmRead)
   let bytes = fileToSeq(s)
-  readSections(bytes, sections)
-  
+  return readSections(bytes, sections)
