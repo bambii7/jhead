@@ -27,7 +27,6 @@ proc byteSeqToString(s: seq[byte]): string =
     result.addEscapedChar(char(c))
 
 proc readSections(bytes: seq[byte], sections: set[byte]): seq[JpegSection] =
-  discard sections
   var cursor = 0
   while cursor < bytes.len:
     if bytes[cursor] == SEC:
