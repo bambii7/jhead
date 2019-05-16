@@ -34,20 +34,20 @@ proc readSections(bytes: seq[byte], sections: set[byte]): seq[JpegSection] =
       let section_type = bytes[cursor + 1]
       case section_type:
         of SOI:
+          # start of image
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "start of image"
         of EOI:
+          # end of image
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "end of image"
         of SOS:
+          # start of scan
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "start of scan"
         of JFIF:
           if not sections.contains(section_type):
             cursor.inc
@@ -82,32 +82,28 @@ proc readSections(bytes: seq[byte], sections: set[byte]): seq[JpegSection] =
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "exif marker"
         of COM:
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "comment"
         of DQT:
+          # quantization table
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "quantization table"
         of DHT:
+          # huffmann table
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "huffmann table"
         of DRI:
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "DRI"
         of IPTC:
           if not sections.contains(section_type):
             cursor.inc
             continue
-          echo "IPTC"
         else:
           discard
     cursor.inc
