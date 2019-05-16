@@ -2,16 +2,6 @@ import streams
 import strformat
 import jtypes
 
-type
-  Jpeg = object
-    path: string
-    sections: seq[JpegSection]
-    bytes: seq[byte]
-  JpegSection = object
-    data: char
-    classification: int
-    size: uint
-
 iterator bytes(s: FileStream): byte =
   while not s.atEnd:
     yield s.readUint8
@@ -26,7 +16,8 @@ proc byteSeqToString(s: seq[byte]): string =
   for c in s:
     result.addEscapedChar(char(c))
 
-proc readSections(bytes: seq[byte], sections: set[byte]): seq[JpegSection] =
+proc readSections(bytes: seq[byte], sections: set[byte]): ImageInfo =
+  result = ImageInfo()
   var cursor = 0
   while cursor < bytes.len:
     if bytes[cursor] == SEC:
@@ -107,11 +98,8 @@ proc readSections(bytes: seq[byte], sections: set[byte]): seq[JpegSection] =
           discard
     cursor.inc
 
-proc readJpgSections*(jpeg_path: string, sections: set[byte]): Jpeg =
+proc readJpgSections*(jpeg_path: string, sections: set[byte]): ImageInfo =
   let s = newFileStream(jpeg_path, FileMode.fmRead)
   let bytes = fileToSeq(s)
-  let sections = readSections(bytes, sections)
-  let jpeg = Jpeg(path: jpeg_path, bytes: bytes, sections: sections)
-
-  return jpeg
+  readSections(bytes, sections)
   
