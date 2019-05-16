@@ -49,13 +49,10 @@ proc readSections(bytes: seq[byte], sections: set[byte]): ImageInfo =
           assert(byteSeqToString(data[0..4]) == "JFIF\\x00", "JFIF marker missing header")
           assert(int(section_len) >= 16, "JFIF header too short")
 
-          let resolutions_units = data[7]
-          let x_density = (data[8] shl 8) or data[9];
-          let y_density = (data[10] shl 8) or data[11];
           result.jfifHeader.present = true
-          result.jfifHeader.resolutionUnits = resolutions_units
-          result.jfifHeader.xDensity = x_density
-          result.jfifHeader.yDensity = y_density
+          result.jfifHeader.resolutionUnits = data[7]
+          result.jfifHeader.xDensity = (data[8] shl 8) or data[9]
+          result.jfifHeader.yDensity = (data[10] shl 8) or data[11]
         of EXIF:
           if not sections.contains(section_type):
             cursor.inc
