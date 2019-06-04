@@ -10,3 +10,9 @@ There are breaking interface changes. Where single dashed commands `-di` are exp
 
 # Usage
 `jhead --jfif <file>` # print jfif header
+`jhead --com <file>` # print comment
+
+
+TODO:
+
+MD5 hash of quntization and huffman tables ignoring meta data.
