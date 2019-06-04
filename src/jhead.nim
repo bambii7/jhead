@@ -13,6 +13,7 @@ http://www.sentex.net/~mwandel/jhead
 Usage:
   jhead <files>...
   jhead --jfif <files>
+  jhead --com <files>
   jhead -v <files>...
   jhead (-h | --help)
 
@@ -27,6 +28,8 @@ proc main():void =
   
   if args["--jfif"]:
     sections.incl(byte(JFIF))
+  if args["--com"]:
+    sections.incl(byte(COM))
 
   echo readJpgSections(file, sections)
 

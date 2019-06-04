@@ -61,6 +61,11 @@ proc readSections(bytes: seq[byte], sections: set[byte]): ImageInfo =
           if not sections.contains(section_type):
             cursor.inc
             continue
+          let lh = bytes[cursor + 2]
+          let ll = bytes[cursor + 3]
+          let section_len = (lh shl 8) or ll
+          let data = bytes[cursor + 4..(cursor + int(section_len) + 4)]
+          echo byteSeqToString(data)
         of DQT:
           # quantization table
           if not sections.contains(section_type):
