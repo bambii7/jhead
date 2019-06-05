@@ -18,34 +18,34 @@ proc byteSeqToString(s: seq[byte]): string =
 proc readSections(bytes: seq[byte], sections: set[byte]): ImageInfo =
   result = ImageInfo()
   var cursor = 0
-  while cursor < bytes.len:
+  while cursor < bytes.len - 4:
     if bytes[cursor] == SEC:
-      let section_type = bytes[cursor + 1]
+      cursor.inc
+      let section_type = bytes[cursor]
+      cursor.inc
+      let lh = bytes[cursor]
+      cursor.inc
+      let ll = bytes[cursor]
+      cursor.inc
+      let section_len = (lh shl 8) or ll
+      let data = bytes[cursor..(cursor + int(section_len))]
       case section_type:
         of SOI:
           # start of image
           if not sections.contains(section_type):
-            cursor.inc
             continue
         of EOI:
           # end of image
           if not sections.contains(section_type):
-            cursor.inc
             continue
         of SOS:
           # start of scan
           if not sections.contains(section_type):
-            cursor.inc
             continue
         of JFIF:
           if not sections.contains(section_type):
-            cursor.inc
             continue
-          let lh = bytes[cursor + 2]
-          let ll = bytes[cursor + 3]
-          let section_len = (lh shl 8) or ll
-          let data = bytes[cursor + 4..(cursor + int(section_len) + 4)]
-
+            
           assert(byteSeqToString(data[0..4]) == "JFIF\\x00", "JFIF marker missing header")
           assert(int(section_len) >= 16, "JFIF header too short")
 
@@ -55,34 +55,24 @@ proc readSections(bytes: seq[byte], sections: set[byte]): ImageInfo =
           result.jfifHeader.yDensity = (data[10] shl 8) or data[11]
         of EXIF:
           if not sections.contains(section_type):
-            cursor.inc
             continue
         of COM:
           if not sections.contains(section_type):
-            cursor.inc
             continue
-          let lh = bytes[cursor + 2]
-          let ll = bytes[cursor + 3]
-          let section_len = (lh shl 8) or ll
-          let data = bytes[cursor + 4..(cursor + int(section_len) + 4)]
           echo byteSeqToString(data)
         of DQT:
           # quantization table
           if not sections.contains(section_type):
-            cursor.inc
             continue
         of DHT:
           # huffmann table
           if not sections.contains(section_type):
-            cursor.inc
             continue
         of DRI:
           if not sections.contains(section_type):
-            cursor.inc
             continue
         of IPTC:
           if not sections.contains(section_type):
-            cursor.inc
             continue
         else:
           discard
