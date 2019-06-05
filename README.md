@@ -2,7 +2,8 @@
 
 This is a  Nim port of Matthias Wandel Jhead utilility. A jpg header manipulation tool.
 http://www.sentex.net/~mwandel/jhead/
-There are breaking interface changes. Where single dashed commands `-di` are expanded to double dashed and verbose naming `--delete-iptc`.
+
+There are breaking interface changes. Where single dashed commands `-di` are expanded to double dashed and verbose naming `--delete-iptc`. Single dash is reserved for flags.
 
 # Build
 
