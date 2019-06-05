@@ -9,10 +9,13 @@ There are breaking interface changes. Where single dashed commands `-di` are exp
 `nimble build`
 
 # Usage
-`jhead --jfif <file>` # print jfif header
-`jhead --com <file>` # print comment
-
+ - `jhead --jfif <file>` # print jfif header
+ - `jhead --com <file>` # print comment
 
 TODO:
 
-MD5 hash of quntization and huffman tables ignoring meta data.
+ - hash quntization and huffman tables, ignoring meta data to dedupe images.
+ - show exif data
+ - show tags
+ - edit comments
+ - edit tags
