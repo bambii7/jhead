@@ -55,7 +55,7 @@ type
     # xResolution*: float
     # yResolution*: float
     # resolutionUnit*: int
-    # comments*: string
+    comments*: string
     # commentWidthChars*: int
     # thumbnailOffset*: int
     # thumbnailSize*: int

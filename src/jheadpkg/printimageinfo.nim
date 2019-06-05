@@ -17,3 +17,6 @@ proc `$`*(info: ImageInfo): string =
       else:
         resolutions_units_str = "Units (unknown)"
     result = result & &"JFIF SOI marker: {resolutions_units_str}  X-density={$info.jfifHeader.xDensity} Y-density={$info.jfifHeader.yDensity}" & "\n"
+
+  if info.comments.len > 0:
+    result = result & info.comments & "\n"

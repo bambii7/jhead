@@ -59,7 +59,7 @@ proc readSections(bytes: seq[byte], sections: set[byte]): ImageInfo =
         of COM:
           if not sections.contains(section_type):
             continue
-          echo byteSeqToString(data)
+          result.comments = byteSeqToString(data)
         of DQT:
           # quantization table
           if not sections.contains(section_type):
