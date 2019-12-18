@@ -15,7 +15,8 @@ There are breaking interface changes. Where single dashed commands `-di` are exp
 
 TODO:
 
- - hash quntization and huffman tables, ignoring meta data to dedupe images.
+ - hash quantization and huffman tables, ignoring meta data to dedupe images.
+ - base64 jpeg
  - show exif data
  - show tags
  - edit comments
